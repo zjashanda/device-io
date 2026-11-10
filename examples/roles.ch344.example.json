@@ -1,0 +1,28 @@
+{
+  "schema": "ark.device-roles-spec.v1",
+  "strict": true,
+  "comment": "Example: one CH344 quad board where SERIAL-A burns and SERIAL-B logs. Edit board.vid/pid to match your hardware, then run: device-io roles --spec examples/roles.ch344.example.json",
+  "board": {
+    "vid": "1a86",
+    "pid": "55d3"
+  },
+  "roles": [
+    {
+      "role": "burn",
+      "interface": "SERIAL-A",
+      "driver": "ch34x",
+      "required": true
+    },
+    {
+      "role": "log",
+      "interface": "SERIAL-B",
+      "driver": "ch34x",
+      "required": true
+    },
+    {
+      "role": "control",
+      "interface": "SERIAL-C",
+      "required": false
+    }
+  ]
+}

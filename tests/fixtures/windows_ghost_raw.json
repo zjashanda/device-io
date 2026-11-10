@@ -1,0 +1,57 @@
+{
+  "schema": "ark.device-io.raw.v1",
+  "os": "windows",
+  "generated_at": "2026-11-10T20:52:10.000",
+  "devices": [
+    {
+      "instance_id": "USB\\VID_8765&PID_5678\\9_2A847557_0_0000",
+      "class": "Ports",
+      "friendly_name": "ListenAI VCOM (COM14)",
+      "status": "OK",
+      "present": true,
+      "service": "usbser",
+      "parent": "USB\\ROOT_HUB30\\4&1F2E3D4C&0&1",
+      "container_id": "{9B4E7D21-3C58-4A90-8F16-2D7C5B9E4A02}",
+      "location": "Port_#0004.Hub_#0005",
+      "hardware_ids": [
+        "USB\\VID_8765&PID_5678&REV_0100",
+        "USB\\VID_8765&PID_5678"
+      ],
+      "manufacturer": "ListenAI",
+      "device_desc": "ListenAI Virtual COM Port"
+    },
+    {
+      "instance_id": "USB\\VID_1A86&PID_55D3&MI_00\\7&1C8E5B0D&0&0000",
+      "class": "Ports",
+      "friendly_name": "USB-SERIAL CH344 (COM7)",
+      "status": "Unknown",
+      "present": false,
+      "service": "CH343SER",
+      "parent": "USB\\VID_1A86&PID_55D3\\5&2B4D5C3D&0&2",
+      "container_id": "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}",
+      "location": "",
+      "hardware_ids": [
+        "USB\\VID_1A86&PID_55D3&REV_0234&MI_00",
+        "USB\\VID_1A86&PID_55D3&MI_00"
+      ],
+      "manufacturer": "WCH.CN",
+      "device_desc": "USB-SERIAL CH344"
+    }
+  ],
+  "serial_ports": [
+    {
+      "name": "COM14",
+      "instance_id": "USB\\VID_8765&PID_5678\\9_2A847557_0_0000",
+      "status": "OK",
+      "device_desc": "ListenAI Virtual COM Port"
+    },
+    {
+      "name": "COM7",
+      "instance_id": "USB\\VID_1A86&PID_55D3&MI_00\\7&1C8E5B0D&0&0000",
+      "status": "Unknown",
+      "device_desc": "USB-SERIAL CH344"
+    }
+  ],
+  "audio": [],
+  "warnings": []
+}

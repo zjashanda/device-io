@@ -1,0 +1,74 @@
+{
+  "schema": "ark.device-io.raw.v1",
+  "os": "windows",
+  "generated_at": "2026-11-10T20:55:00.000",
+  "devices": [
+    {
+      "instance_id": "USB\\ROOT_HUB30\\4&1F2E3D4C&0&0",
+      "class": "USB",
+      "friendly_name": "USB Root Hub (USB 3.0)",
+      "status": "OK",
+      "present": true,
+      "service": "USBHUB3",
+      "parent": "PCI\\VEN_8086&DEV_A36D&SUBSYS_00000000&REV_10\\3&11583659&0&A0",
+      "container_id": "{C1D2E3F4-0000-4000-8000-000000000001}",
+      "location": "PCI bus 0, device 20, function 0",
+      "hardware_ids": [
+        "USB\\ROOT_HUB30&VID_1D6B&PID_0003&REV_0510"
+      ],
+      "manufacturer": "(Standard USB Host Controller)",
+      "device_desc": "USB Root Hub (USB 3.0)"
+    },
+    {
+      "instance_id": "HID\\VID_046D&PID_C52B&MI_01\\8&2A1B3C4D&0&0000",
+      "class": "HIDClass",
+      "friendly_name": "USB Input Device",
+      "status": "OK",
+      "present": true,
+      "service": "HidUsb",
+      "parent": "USB\\VID_046D&PID_C52B\\6&2F3A4B5C&0&1",
+      "container_id": "{C1D2E3F4-0000-4000-8000-000000000002}",
+      "location": "Port_#0001.Hub_#0005",
+      "hardware_ids": [
+        "HID\\VID_046D&PID_C52B&REV_1200&MI_01"
+      ],
+      "manufacturer": "Logitech",
+      "device_desc": "USB Input Device"
+    },
+    {
+      "instance_id": "DISPLAY\\DELA1B2\\5&3C4D5E6F&0&UID4352",
+      "class": "Monitor",
+      "friendly_name": "Generic PnP Monitor",
+      "status": "OK",
+      "present": true,
+      "service": "monitor",
+      "parent": "PCI\\VEN_8086&DEV_3E9B&SUBSYS_00000000&REV_00\\3&11583659&0&10",
+      "container_id": "{C1D2E3F4-0000-4000-8000-000000000003}",
+      "location": "",
+      "hardware_ids": [
+        "MONITOR\\DELA1B2"
+      ],
+      "manufacturer": "(Standard monitor types)",
+      "device_desc": "Generic PnP Monitor"
+    },
+    {
+      "instance_id": "LPTENUM\\ROOT\\0000",
+      "class": "Ports",
+      "friendly_name": "Printer Port (LPT1)",
+      "status": "OK",
+      "present": true,
+      "service": "Parport",
+      "parent": "",
+      "container_id": "",
+      "location": "",
+      "hardware_ids": [
+        "LPTENUM\\ROOT"
+      ],
+      "manufacturer": "(Standard port types)",
+      "device_desc": "Printer Port"
+    }
+  ],
+  "serial_ports": [],
+  "audio": [],
+  "warnings": []
+}

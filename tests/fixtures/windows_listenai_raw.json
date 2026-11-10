@@ -1,0 +1,79 @@
+{
+  "schema": "ark.device-io.raw.v1",
+  "os": "windows",
+  "generated_at": "2026-11-10T20:47:30.000",
+  "devices": [
+    {
+      "instance_id": "USB\\VID_8765&PID_5678\\9_2A847557_0_0000",
+      "class": "Ports",
+      "friendly_name": "ListenAI VCOM (COM14)",
+      "status": "OK",
+      "present": true,
+      "service": "usbser",
+      "parent": "USB\\ROOT_HUB30\\4&1F2E3D4C&0&1",
+      "container_id": "{9B4E7D21-3C58-4A90-8F16-2D7C5B9E4A02}",
+      "location": "Port_#0004.Hub_#0005",
+      "hardware_ids": [
+        "USB\\VID_8765&PID_5678&REV_0100",
+        "USB\\VID_8765&PID_5678"
+      ],
+      "manufacturer": "ListenAI",
+      "device_desc": "ListenAI Virtual COM Port"
+    },
+    {
+      "instance_id": "SWD\\MMDEVAPI\\{A1B2C3D4-1111-4A2B-9C3D-000000000001}",
+      "class": "AudioEndpoint",
+      "friendly_name": "Capture 8ch 麦克风 (ListenAI Audio)",
+      "status": "OK",
+      "present": true,
+      "service": "",
+      "parent": "USB\\VID_8765&PID_5678\\9_2A847557_0_0000",
+      "container_id": "{9B4E7D21-3C58-4A90-8F16-2D7C5B9E4A02}",
+      "location": "",
+      "hardware_ids": [
+        "SWD\\MMDEVAPI"
+      ],
+      "manufacturer": "Microsoft",
+      "device_desc": "Audio Endpoint"
+    },
+    {
+      "instance_id": "SWD\\MMDEVAPI\\{A1B2C3D4-2222-4A2B-9C3D-000000000002}",
+      "class": "AudioEndpoint",
+      "friendly_name": "Render 2ch 扬声器 (ListenAI Audio)",
+      "status": "OK",
+      "present": true,
+      "service": "",
+      "parent": "USB\\VID_8765&PID_5678\\9_2A847557_0_0000",
+      "container_id": "{9B4E7D21-3C58-4A90-8F16-2D7C5B9E4A02}",
+      "location": "",
+      "hardware_ids": [
+        "SWD\\MMDEVAPI"
+      ],
+      "manufacturer": "Microsoft",
+      "device_desc": "Audio Endpoint"
+    }
+  ],
+  "serial_ports": [
+    {
+      "name": "COM14",
+      "instance_id": "USB\\VID_8765&PID_5678\\9_2A847557_0_0000",
+      "status": "OK",
+      "device_desc": "ListenAI Virtual COM Port"
+    }
+  ],
+  "audio": [
+    {
+      "instance_id": "SWD\\MMDEVAPI\\{A1B2C3D4-1111-4A2B-9C3D-000000000001}",
+      "name": "Capture 8ch 麦克风 (ListenAI Audio)",
+      "state": "OK",
+      "class": "AudioEndpoint"
+    },
+    {
+      "instance_id": "SWD\\MMDEVAPI\\{A1B2C3D4-2222-4A2B-9C3D-000000000002}",
+      "name": "Render 2ch 扬声器 (ListenAI Audio)",
+      "state": "OK",
+      "class": "AudioEndpoint"
+    }
+  ],
+  "warnings": []
+}

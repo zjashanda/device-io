@@ -1,0 +1,151 @@
+{
+  "schema": "ark.device-io.v1",
+  "generated_at": "2026-11-10T20:45:00.000",
+  "backend": "windows",
+  "os": "windows",
+  "host": "BENCH-PC-CH344",
+  "dry_run": true,
+  "ports": [
+    {
+      "id": "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}:COM13",
+      "kind": "serial",
+      "device": "COM13",
+      "os": "windows",
+      "present": true,
+      "driver": {
+        "family": "ch34x",
+        "status": "ok",
+        "id": "CH343SER",
+        "display": "WCH CH344 Quad_Serial (4 路)",
+        "evidence": "service=CH343SER; device status=OK",
+        "requires": [
+          "CH343SER"
+        ]
+      },
+      "label": "CH344 Quad_Serial A",
+      "transport": "usb",
+      "interface": "SERIAL-A",
+      "interface_number": 0,
+      "vid": "1a86",
+      "pid": "55d3",
+      "manufacturer": "WCH.CN",
+      "product": "CH344 Quad_Serial",
+      "board_key": "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}",
+      "usb_path": "Port_#0003.Hub_#0005",
+      "location": "Port_#0003.Hub_#0005"
+    },
+    {
+      "id": "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}:COM15",
+      "kind": "serial",
+      "device": "COM15",
+      "os": "windows",
+      "present": true,
+      "driver": {
+        "family": "ch34x",
+        "status": "ok",
+        "id": "CH343SER",
+        "display": "WCH CH344 Quad_Serial (4 路)",
+        "evidence": "service=CH343SER; device status=OK",
+        "requires": [
+          "CH343SER"
+        ]
+      },
+      "label": "CH344 Quad_Serial B",
+      "transport": "usb",
+      "interface": "SERIAL-B",
+      "interface_number": 2,
+      "vid": "1a86",
+      "pid": "55d3",
+      "manufacturer": "WCH.CN",
+      "product": "CH344 Quad_Serial",
+      "board_key": "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}",
+      "usb_path": "Port_#0003.Hub_#0005",
+      "location": "Port_#0003.Hub_#0005"
+    },
+    {
+      "id": "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}:COM18",
+      "kind": "serial",
+      "device": "COM18",
+      "os": "windows",
+      "present": true,
+      "driver": {
+        "family": "ch34x",
+        "status": "ok",
+        "id": "CH343SER",
+        "display": "WCH CH344 Quad_Serial (4 路)",
+        "evidence": "service=CH343SER; device status=OK",
+        "requires": [
+          "CH343SER"
+        ]
+      },
+      "label": "CH344 Quad_Serial C",
+      "transport": "usb",
+      "interface": "SERIAL-C",
+      "interface_number": 4,
+      "vid": "1a86",
+      "pid": "55d3",
+      "manufacturer": "WCH.CN",
+      "product": "CH344 Quad_Serial",
+      "board_key": "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}",
+      "usb_path": "Port_#0003.Hub_#0005",
+      "location": "Port_#0003.Hub_#0005"
+    },
+    {
+      "id": "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}:COM12",
+      "kind": "serial",
+      "device": "COM12",
+      "os": "windows",
+      "present": true,
+      "driver": {
+        "family": "ch34x",
+        "status": "ok",
+        "id": "CH343SER",
+        "display": "WCH CH344 Quad_Serial (4 路)",
+        "evidence": "service=CH343SER; device status=OK",
+        "requires": [
+          "CH343SER"
+        ]
+      },
+      "label": "CH344 Quad_Serial D",
+      "transport": "usb",
+      "interface": "SERIAL-D",
+      "interface_number": 6,
+      "vid": "1a86",
+      "pid": "55d3",
+      "manufacturer": "WCH.CN",
+      "product": "CH344 Quad_Serial",
+      "board_key": "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}",
+      "usb_path": "Port_#0003.Hub_#0005",
+      "location": "Port_#0003.Hub_#0005"
+    }
+  ],
+  "audio": [],
+  "warnings": [],
+  "sources": [
+    "script:windows/Collect-DeviceIo.ps1"
+  ],
+  "boards": [
+    {
+      "key": "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}",
+      "title": "CH344 Quad_Serial #1",
+      "vid": "1a86",
+      "pid": "55d3",
+      "serial": null,
+      "product": "CH344 Quad_Serial",
+      "transport": "usb",
+      "port_ids": [
+        "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}:COM13",
+        "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}:COM15",
+        "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}:COM18",
+        "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}:COM12"
+      ],
+      "audio_ids": [],
+      "warnings": [],
+      "adapter": {
+        "id": "ch344-quad",
+        "display": "WCH CH344 Quad_Serial (4 路)",
+        "confidence": "certain"
+      }
+    }
+  ]
+}

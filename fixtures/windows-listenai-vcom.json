@@ -1,0 +1,90 @@
+{
+  "schema": "ark.device-io.v1",
+  "generated_at": "2026-11-10T20:47:30.000",
+  "backend": "windows",
+  "os": "windows",
+  "host": "BENCH-PC-LISTENAI",
+  "dry_run": true,
+  "ports": [
+    {
+      "id": "{9B4E7D21-3C58-4A90-8F16-2D7C5B9E4A02}:COM14",
+      "kind": "serial",
+      "device": "COM14",
+      "os": "windows",
+      "present": true,
+      "driver": {
+        "family": "listenai-vcom",
+        "status": "ok",
+        "id": "usbser",
+        "display": "ListenAI VCOM (CDC-ACM)",
+        "evidence": "service=usbser; device status=OK",
+        "requires": [
+          "usbser"
+        ]
+      },
+      "label": "ListenAI VCOM",
+      "transport": "usb",
+      "interface": "VCOM",
+      "vid": "8765",
+      "pid": "5678",
+      "serial": "9_2A847557_0_0000",
+      "manufacturer": "ListenAI",
+      "product": "ListenAI VCOM",
+      "board_key": "{9B4E7D21-3C58-4A90-8F16-2D7C5B9E4A02}",
+      "usb_path": "Port_#0004.Hub_#0005",
+      "location": "Port_#0004.Hub_#0005"
+    }
+  ],
+  "audio": [
+    {
+      "id": "{9B4E7D21-3C58-4A90-8F16-2D7C5B9E4A02}:SWD\\MMDEVAPI\\{A1B2C3D4-1111-4A2B-9C3D-000000000001}",
+      "kind": "audio-capture",
+      "name": "麦克风 (ListenAI Audio)",
+      "present": true,
+      "board_key": "{9B4E7D21-3C58-4A90-8F16-2D7C5B9E4A02}",
+      "channels": 8,
+      "vid": "8765",
+      "pid": "5678",
+      "endpoint_id": "SWD\\MMDEVAPI\\{A1B2C3D4-1111-4A2B-9C3D-000000000001}"
+    },
+    {
+      "id": "{9B4E7D21-3C58-4A90-8F16-2D7C5B9E4A02}:SWD\\MMDEVAPI\\{A1B2C3D4-2222-4A2B-9C3D-000000000002}",
+      "kind": "audio-render",
+      "name": "扬声器 (ListenAI Audio)",
+      "present": true,
+      "board_key": "{9B4E7D21-3C58-4A90-8F16-2D7C5B9E4A02}",
+      "channels": 2,
+      "vid": "8765",
+      "pid": "5678",
+      "endpoint_id": "SWD\\MMDEVAPI\\{A1B2C3D4-2222-4A2B-9C3D-000000000002}"
+    }
+  ],
+  "warnings": [],
+  "sources": [
+    "script:windows/Collect-DeviceIo.ps1"
+  ],
+  "boards": [
+    {
+      "key": "{9B4E7D21-3C58-4A90-8F16-2D7C5B9E4A02}",
+      "title": "ListenAI 板卡 #1",
+      "vid": "8765",
+      "pid": "5678",
+      "serial": "9_2A847557_0_0000",
+      "product": "ListenAI VCOM",
+      "transport": "usb",
+      "port_ids": [
+        "{9B4E7D21-3C58-4A90-8F16-2D7C5B9E4A02}:COM14"
+      ],
+      "audio_ids": [
+        "{9B4E7D21-3C58-4A90-8F16-2D7C5B9E4A02}:SWD\\MMDEVAPI\\{A1B2C3D4-1111-4A2B-9C3D-000000000001}",
+        "{9B4E7D21-3C58-4A90-8F16-2D7C5B9E4A02}:SWD\\MMDEVAPI\\{A1B2C3D4-2222-4A2B-9C3D-000000000002}"
+      ],
+      "warnings": [],
+      "adapter": {
+        "id": "listenai-vcom",
+        "display": "ListenAI VCOM (CDC-ACM)",
+        "confidence": "certain"
+      }
+    }
+  ]
+}

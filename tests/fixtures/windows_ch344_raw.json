@@ -1,0 +1,120 @@
+{
+  "schema": "ark.device-io.raw.v1",
+  "os": "windows",
+  "generated_at": "2026-11-10T20:45:00.000",
+  "devices": [
+    {
+      "instance_id": "USB\\VID_1A86&PID_55D3\\5&2B4D5C3D&0&2",
+      "class": "USB",
+      "friendly_name": "USB Composite Device",
+      "status": "OK",
+      "present": true,
+      "service": "usbccgp",
+      "parent": "USB\\ROOT_HUB30\\4&1F2E3D4C&0&0",
+      "container_id": "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}",
+      "location": "Port_#0003.Hub_#0005",
+      "hardware_ids": [
+        "USB\\VID_1A86&PID_55D3&REV_0234",
+        "USB\\VID_1A86&PID_55D3"
+      ],
+      "manufacturer": "WCH.CN",
+      "device_desc": "USB Composite Device"
+    },
+    {
+      "instance_id": "USB\\VID_1A86&PID_55D3&MI_00\\7&1C8E5B0D&0&0000",
+      "class": "Ports",
+      "friendly_name": "USB-SERIAL CH344 (COM13)",
+      "status": "OK",
+      "present": true,
+      "service": "CH343SER",
+      "parent": "USB\\VID_1A86&PID_55D3\\5&2B4D5C3D&0&2",
+      "container_id": "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}",
+      "location": "Port_#0003.Hub_#0005",
+      "hardware_ids": [
+        "USB\\VID_1A86&PID_55D3&REV_0234&MI_00",
+        "USB\\VID_1A86&PID_55D3&MI_00"
+      ],
+      "manufacturer": "WCH.CN",
+      "device_desc": "USB-SERIAL CH344"
+    },
+    {
+      "instance_id": "USB\\VID_1A86&PID_55D3&MI_02\\7&1C8E5B0D&0&0002",
+      "class": "Ports",
+      "friendly_name": "USB-SERIAL CH344 (COM15)",
+      "status": "OK",
+      "present": true,
+      "service": "CH343SER",
+      "parent": "USB\\VID_1A86&PID_55D3\\5&2B4D5C3D&0&2",
+      "container_id": "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}",
+      "location": "Port_#0003.Hub_#0005",
+      "hardware_ids": [
+        "USB\\VID_1A86&PID_55D3&REV_0234&MI_02",
+        "USB\\VID_1A86&PID_55D3&MI_02"
+      ],
+      "manufacturer": "WCH.CN",
+      "device_desc": "USB-SERIAL CH344"
+    },
+    {
+      "instance_id": "USB\\VID_1A86&PID_55D3&MI_04\\7&1C8E5B0D&0&0004",
+      "class": "Ports",
+      "friendly_name": "USB-SERIAL CH344 (COM18)",
+      "status": "OK",
+      "present": true,
+      "service": "CH343SER",
+      "parent": "USB\\VID_1A86&PID_55D3\\5&2B4D5C3D&0&2",
+      "container_id": "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}",
+      "location": "Port_#0003.Hub_#0005",
+      "hardware_ids": [
+        "USB\\VID_1A86&PID_55D3&REV_0234&MI_04",
+        "USB\\VID_1A86&PID_55D3&MI_04"
+      ],
+      "manufacturer": "WCH.CN",
+      "device_desc": "USB-SERIAL CH344"
+    },
+    {
+      "instance_id": "USB\\VID_1A86&PID_55D3&MI_06\\7&1C8E5B0D&0&0006",
+      "class": "Ports",
+      "friendly_name": "USB-SERIAL CH344 (COM12)",
+      "status": "OK",
+      "present": true,
+      "service": "CH343SER",
+      "parent": "USB\\VID_1A86&PID_55D3\\5&2B4D5C3D&0&2",
+      "container_id": "{6F2A1C4E-1B7D-4B6A-9D33-5F2C8A1E7B01}",
+      "location": "Port_#0003.Hub_#0005",
+      "hardware_ids": [
+        "USB\\VID_1A86&PID_55D3&REV_0234&MI_06",
+        "USB\\VID_1A86&PID_55D3&MI_06"
+      ],
+      "manufacturer": "WCH.CN",
+      "device_desc": "USB-SERIAL CH344"
+    }
+  ],
+  "serial_ports": [
+    {
+      "name": "COM13",
+      "instance_id": "USB\\VID_1A86&PID_55D3&MI_00\\7&1C8E5B0D&0&0000",
+      "status": "OK",
+      "device_desc": "USB-SERIAL CH344"
+    },
+    {
+      "name": "COM15",
+      "instance_id": "USB\\VID_1A86&PID_55D3&MI_02\\7&1C8E5B0D&0&0002",
+      "status": "OK",
+      "device_desc": "USB-SERIAL CH344"
+    },
+    {
+      "name": "COM18",
+      "instance_id": "USB\\VID_1A86&PID_55D3&MI_04\\7&1C8E5B0D&0&0004",
+      "status": "OK",
+      "device_desc": "USB-SERIAL CH344"
+    },
+    {
+      "name": "COM12",
+      "instance_id": "USB\\VID_1A86&PID_55D3&MI_06\\7&1C8E5B0D&0&0006",
+      "status": "OK",
+      "device_desc": "USB-SERIAL CH344"
+    }
+  ],
+  "audio": [],
+  "warnings": []
+}

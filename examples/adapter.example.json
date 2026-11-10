@@ -1,0 +1,19 @@
+{
+  "schema": "ark.device-adapter.v1",
+  "comment": "Example plugin: teach device-io a board it does not ship with. Load with: device-io boards --plugin examples/adapter.example.json",
+  "adapters": [
+    {
+      "id": "example-ft4232-quad",
+      "display": "FT4232 Quad RS232",
+      "family": "ftdi",
+      "vid": ["0403"],
+      "pid": ["6011"],
+      "product_contains": ["ft4232"],
+      "interfaces": ["interface a", "interface b", "interface c", "interface d"],
+      "platforms": ["windows", "linux"],
+      "confidence": "likely",
+      "requires": ["ftdi"],
+      "notes": "Channel letters follow the FTDI datasheet order; confirm against the bench silkscreen."
+    }
+  ]
+}

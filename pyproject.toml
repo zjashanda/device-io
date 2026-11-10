@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ark-device-io"
+version = "0.1.0"
+description = "Canonical device I/O layer: USB/serial enumeration, port role detection, hidden-device cleanup and driver adapters for Ark bench skills"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Ark / zjashanda" }]
+keywords = ["usb", "serial", "device", "windows", "linux", "ark"]
+dependencies = []
+
+[project.optional-dependencies]
+dev = []
+
+[project.scripts]
+device-io = "device_io.cli:main"
+
+[tool.setuptools]
+packages = [
+  "device_io",
+  "device_io.backends",
+]
+
+[tool.setuptools.package-data]
+device_io = ["py.typed"]
