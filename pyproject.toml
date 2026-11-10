@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ark-device-io"
-version = "0.1.0"
+version = "0.2.0"
 description = "Canonical device I/O layer: USB/serial enumeration, port role detection, hidden-device cleanup and driver adapters for Ark bench skills"
 readme = "README.md"
 requires-python = ">=3.9"

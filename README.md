@@ -82,7 +82,7 @@ Describe the bench once, resolve it every run:
 
 ```
 $ device-io roles --spec roles.json
-角色解析 2026-11-10T20:54:13.225  backend=windows  结果=OK
+角色解析 2026-11-10 20:54:13  backend=windows  结果=OK
   burn       resolved  COM13    matched driver=ch34x, interface=SERIAL-A via interface SERIAL-A, CH344 Quad_Serial
   control    resolved  COM18    matched interface=SERIAL-C via interface SERIAL-C, CH344 Quad_Serial
   log        resolved  COM15    matched driver=ch34x, interface=SERIAL-B via interface SERIAL-B, CH344 Quad_Serial

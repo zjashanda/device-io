@@ -6,9 +6,11 @@ schema`` prints. Two rules are hard:
 
 1. Schema identifiers never change meaning inside a major version. A breaking
    change means a new ``...v2`` identifier, never a silent edit of ``v1``.
-2. Every timestamp written by this tool is Beijing wall-clock time with NO
-   timezone offset, e.g. ``2026-11-10T21:05:00.123``. A ``+08:00`` suffix or a
-   ``Z`` suffix is a contract violation.
+2. Every timestamp written by this tool is Beijing wall-clock time in the
+   workspace format ``YYYY-MM-DD HH:MM:SS``, e.g. ``2026-11-10 21:05:00``.
+   ``T``, ``Z``, ``+08:00`` and RFC3339 are all contract violations. An
+   unmodified external timestamp is only allowed in a field whose name starts
+   with ``raw_``.
 """
 
 from __future__ import annotations
@@ -33,12 +35,27 @@ BJ = timezone(timedelta(hours=8), "Asia/Shanghai")
 TIME_CONTRACT: Dict[str, str] = {
     "zone": "Asia/Shanghai",
     "offset_in_string": "none",
-    "format": "YYYY-MM-DDThh:mm:ss.sss",
-    "example": "2026-11-10T21:05:00.123",
+    "format": "YYYY-MM-DD HH:MM:SS",
+    "example": "2026-11-10 21:05:00",
+    "forbidden": "T separator, Z suffix, +08:00 offset, RFC3339",
+    "raw_exception": "fields named raw_* may carry an unmodified external timestamp",
 }
 
-_TIME_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}$")
-_TIME_FMT = "%Y-%m-%dT%H:%M:%S.%f"
+TIME_PATTERN = r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$"
+RAW_PREFIX = "raw_"
+
+_TIME_RE = re.compile(TIME_PATTERN)
+_TIME_FMT = "%Y-%m-%d %H:%M:%S"
+
+
+def is_raw_field(name: str) -> bool:
+    """True for fields exempt from the timestamp contract."""
+    return str(name).lower().startswith(RAW_PREFIX)
+
+
+def raw_fields(record: Dict[str, Any]) -> Dict[str, Any]:
+    """Copy ``raw_*`` entries verbatim; they keep their original time format."""
+    return {key: value for key, value in record.items() if is_raw_field(key)}
 
 # Port kinds. ``serial`` is a COM/tty device; audio kinds carry an endpoint
 # identity instead of a port name.
@@ -68,8 +85,8 @@ class SchemaError(ValueError):
 
 
 def now_bj() -> str:
-    """Current Beijing wall-clock time, millisecond precision, no offset."""
-    return datetime.now(BJ).strftime(_TIME_FMT)[:-3]
+    """Current Beijing wall-clock time, second precision, no offset."""
+    return datetime.now(BJ).strftime(_TIME_FMT)
 
 
 def is_bj_timestamp(value: Any) -> bool:
@@ -207,8 +224,8 @@ def snapshot_schema() -> Dict[str, Any]:
             "schema": {"const": SCHEMAS["snapshot"]},
             "generated_at": {
                 "type": "string",
-                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}$",
-                "description": "Beijing wall-clock, no offset",
+                "pattern": TIME_PATTERN,
+                "description": "Beijing wall-clock YYYY-MM-DD HH:MM:SS, no offset",
             },
             "backend": {"type": "string", "enum": list(BACKENDS)},
             "os": {"type": "string", "enum": ["windows", "linux", "unknown"]},
@@ -233,7 +250,11 @@ def role_map_schema() -> Dict[str, Any]:
         "required": ["schema", "generated_at", "spec_schema", "roles", "ok"],
         "properties": {
             "schema": {"const": SCHEMAS["role_map"]},
-            "generated_at": {"type": "string"},
+            "generated_at": {
+                "type": "string",
+                "pattern": TIME_PATTERN,
+                "description": "Beijing wall-clock YYYY-MM-DD HH:MM:SS, no offset",
+            },
             "spec_schema": {"const": SCHEMAS["roles_spec"]},
             "backend": {"type": "string"},
             "dry_run": {"type": "boolean"},
@@ -327,7 +348,11 @@ def clear_plan_schema() -> Dict[str, Any]:
         "required": ["schema", "generated_at", "os", "supported", "apply", "items"],
         "properties": {
             "schema": {"const": SCHEMAS["clear_plan"]},
-            "generated_at": {"type": "string"},
+            "generated_at": {
+                "type": "string",
+                "pattern": TIME_PATTERN,
+                "description": "Beijing wall-clock YYYY-MM-DD HH:MM:SS, no offset",
+            },
             "os": {"type": "string"},
             "supported": {"type": "boolean"},
             "apply": {"type": "boolean", "description": "false = preview only"},
@@ -363,7 +388,11 @@ def driver_check_schema() -> Dict[str, Any]:
         "required": ["schema", "generated_at", "os", "ok", "drivers"],
         "properties": {
             "schema": {"const": SCHEMAS["driver_check"]},
-            "generated_at": {"type": "string"},
+            "generated_at": {
+                "type": "string",
+                "pattern": TIME_PATTERN,
+                "description": "Beijing wall-clock YYYY-MM-DD HH:MM:SS, no offset",
+            },
             "os": {"type": "string"},
             "ok": {"type": "boolean"},
             "dry_run": {"type": "boolean"},

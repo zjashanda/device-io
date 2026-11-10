@@ -193,7 +193,7 @@ class AudioBoardKeyTest(unittest.TestCase):
         raw = {
             "schema": "ark.device-io.raw.v1",
             "os": "windows",
-            "generated_at": "2026-11-10T21:00:00.000",
+            "generated_at": "2026-11-10 21:00:00",
             "devices": [
                 {
                     "instance_id": "SWD\\MMDEVAPI\\{DEADBEEF-0000-4000-8000-000000000009}",

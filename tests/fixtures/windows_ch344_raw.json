@@ -1,7 +1,7 @@
 {
   "schema": "ark.device-io.raw.v1",
   "os": "windows",
-  "generated_at": "2026-11-10T20:45:00.000",
+  "generated_at": "2026-11-10 20:45:00",
   "devices": [
     {
       "instance_id": "USB\\VID_1A86&PID_55D3\\5&2B4D5C3D&0&2",
@@ -35,7 +35,8 @@
         "USB\\VID_1A86&PID_55D3&MI_00"
       ],
       "manufacturer": "WCH.CN",
-      "device_desc": "USB-SERIAL CH344"
+      "device_desc": "USB-SERIAL CH344",
+      "raw_last_seen": "2026-11-10T12:11:03Z"
     },
     {
       "instance_id": "USB\\VID_1A86&PID_55D3&MI_02\\7&1C8E5B0D&0&0002",

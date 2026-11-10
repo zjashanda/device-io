@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.2.0 — 2026-11-11
+
+**BREAKING:** the timestamp format changed. Every timestamp this tool writes is
+now `YYYY-MM-DD HH:MM:SS` (Beijing wall-clock, second precision, no timezone in
+the string). `T`, `Z`, `+08:00` and RFC3339 are rejected.
+
+Changed:
+
+- `schema.now_bj()` emits `%Y-%m-%d %H:%M:%S`; `TIME_CONTRACT`, `TIME_PATTERN`
+  and the `generated_at` pattern in every JSON Schema use that form.
+- `windows/Collect-DeviceIo.ps1` formats its `generated_at` the same way.
+- Fixtures, transcripts in `README.md`/`SKILL.md`/`docs/interface.md` and unit
+  test expectations use the new shape.
+- Unmodified external timestamps are carried only in fields whose name starts
+  with `raw_`; `schema.raw_fields()` copies them verbatim and the Windows
+  normaliser preserves them in `extra`. Nothing reinterprets them as local time.
+- Added `tools/time_lint.py`, wired into `tools/run-all.sh`, plus
+  `tests/test_time_contract.py` covering the format, the schema patterns, the
+  fixtures and the `raw_*` exemption.
+
+Migration: documents produced by 0.1.0 carry the old `T`/millisecond shape and
+must be re-recorded (rerun the collector or the fixture replay) instead of being
+re-parsed with 0.2.0.
+
 ## 0.1.0 — 2026-11-10
 
 First public release. Consolidates the device-enumeration parts of `usb-tree`,

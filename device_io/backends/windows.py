@@ -21,7 +21,7 @@ import subprocess
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
-from .. import drivers
+from .. import drivers, schema
 from ..models import AudioEndpoint, DriverInfo, Port
 from . import register
 from .base import (
@@ -386,6 +386,7 @@ def _build_port(
         device=name,
         os="windows",
         kind="serial",
+        extra=schema.raw_fields(device),
         label=_label_for(vid, pid, friendly_name, product, interface),
         transport="usb",
         interface=interface,
@@ -475,7 +476,7 @@ def _build_audio(
         pid=pid,
         endpoint_id=endpoint_id or None,
         present=present,
-        extra={"friendly_name": name},
+        extra={"friendly_name": name, **schema.raw_fields(record)},
     )
 
 

@@ -12,7 +12,10 @@ Two rules hold for every command and every API below:
    limited to non-present (ghost) device instances.
 2. **Versioned JSON.** Every document carries a `schema` key of the form
    `ark.device-<name>.v1`. Adding a field is a minor change; removing or
-   renaming one requires `.v2`.
+   renaming one requires `.v2`. The timestamp format below is part of that
+   contract, not a formatting preference: it was corrected to the workspace
+   `YYYY-MM-DD HH:MM:SS` standard in package 0.2.0, and any value produced by
+   0.1.0 must be re-recorded rather than re-parsed.
 
 ## Schemas
 
@@ -33,17 +36,28 @@ validation.
 
 ## Timestamps
 
-All documents use the same time contract as `venusahisiburner`:
+All documents use the workspace time contract:
 
 ```
 zone:             Asia/Shanghai
 offset_in_string: none
-format:           YYYY-MM-DDThh:mm:ss.sss
-example:          2026-11-10T14:05:00.123
+format:           YYYY-MM-DD HH:MM:SS
+example:          2026-11-10 21:05:00
+forbidden:        T separator, Z suffix, +08:00 offset, RFC3339
+raw_exception:    fields named raw_* may carry an unmodified external timestamp
 ```
 
-`generated_at` is local Beijing time with no `Z` and no `+08:00`. Parsers must
-not reinterpret it as UTC.
+`generated_at` is Beijing wall-clock time at second precision: no `T`
+separator, no `Z`, no `+08:00`. Parsers must not reinterpret it as UTC, and a
+value in any other shape is a contract violation (`SchemaError`).
+
+A field whose name starts with `raw_` is the only exemption. It carries an
+external timestamp exactly as the source system reported it, in whatever format
+that system uses, and consumers must treat it as opaque rather than parsing it
+as local time. `device_io.schema.raw_fields()` copies those entries verbatim.
+
+`tools/time_lint.py` enforces this over the whole tree; it runs as part of
+`tools/run-all.sh`.
 
 ## CLI
 

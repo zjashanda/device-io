@@ -11,7 +11,7 @@ from __future__ import annotations
 from .models import AudioEndpoint, DriverInfo, Port, Snapshot
 from .schema import SCHEMAS, TIME_CONTRACT, now_bj
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 
 def __getattr__(name: str):

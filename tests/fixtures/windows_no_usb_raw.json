@@ -1,7 +1,7 @@
 {
   "schema": "ark.device-io.raw.v1",
   "os": "windows",
-  "generated_at": "2026-11-10T20:55:00.000",
+  "generated_at": "2026-11-10 20:55:00",
   "devices": [
     {
       "instance_id": "USB\\ROOT_HUB30\\4&1F2E3D4C&0&0",

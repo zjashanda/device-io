@@ -69,6 +69,13 @@ else
   echo "SKIP: pwsh not installed"
 fi
 
+step "time lint"
+if python3 tools/time_lint.py "$ROOT"; then
+  echo "PASS: time lint"
+else
+  fail "time lint"
+fi
+
 step "secret scan"
 if python3 tools/secret_scan.py "$ROOT"; then
   echo "PASS: secret scan"

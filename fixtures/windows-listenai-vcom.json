@@ -1,6 +1,6 @@
 {
   "schema": "ark.device-io.v1",
-  "generated_at": "2026-11-10T20:47:30.000",
+  "generated_at": "2026-11-10 20:47:30",
   "backend": "windows",
   "os": "windows",
   "host": "BENCH-PC-LISTENAI",
