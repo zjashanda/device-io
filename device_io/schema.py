@@ -28,6 +28,8 @@ SCHEMAS: Dict[str, str] = {
     "role_map": "ark.device-role-map.v1",
     "clear_plan": "ark.device-clear-plan.v1",
     "driver_check": "ark.device-driver-check.v1",
+    "pdu_status": "ark.device-pdu-status.v1",
+    "pdu_plan": "ark.device-pdu-plan.v1",
 }
 
 BJ = timezone(timedelta(hours=8), "Asia/Shanghai")
@@ -420,6 +422,130 @@ def driver_check_schema() -> Dict[str, Any]:
     }
 
 
+_TS = {
+    "type": "string",
+    "pattern": TIME_PATTERN,
+    "description": "Beijing wall-clock YYYY-MM-DD HH:MM:SS, no offset",
+}
+
+
+def pdu_status_schema() -> Dict[str, Any]:
+    """JSON Schema for ``ark.device-pdu-status.v1`` (read-only PDU snapshot)."""
+    return {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": SCHEMAS["pdu_status"],
+        "title": "ark device pdu status",
+        "type": "object",
+        "required": ["schema", "generated_at", "backend", "target", "outlets", "encoding"],
+        "properties": {
+            "schema": {"const": SCHEMAS["pdu_status"]},
+            "generated_at": _TS,
+            "backend": {"type": "string", "enum": ["snmp", "modbus-rtu"]},
+            "transport": {"type": "string"},
+            "target": {
+                "type": "object",
+                "required": ["host", "port"],
+                "properties": {
+                    "host": {"type": "string"},
+                    "port": {"type": "integer"},
+                    "outlet": {"type": ["integer", "null"], "minimum": 1, "maximum": 8},
+                },
+            },
+            "apply": {"const": False},
+            "supported": {"type": "boolean"},
+            "http_probe": {"type": "object"},
+            "device": {"type": "object"},
+            "outlets": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["outlet", "state"],
+                    "properties": {
+                        "outlet": {"type": "integer", "minimum": 1, "maximum": 8},
+                        "name": {"type": ["string", "null"]},
+                        "state": {"type": "string", "enum": ["on", "off", "unknown"]},
+                        "read_code": {"type": "integer", "enum": [1, 2]},
+                        "current_a": {"type": ["number", "null"]},
+                        "error": {"type": "string"},
+                    },
+                },
+            },
+            "totals": {"type": "object"},
+            "summary": {"type": "object"},
+            "encoding": {
+                "type": "object",
+                "required": ["read", "write", "inverted"],
+                "properties": {
+                    "read": {"type": "object", "description": "1=off 2=on"},
+                    "write": {"type": "object", "description": "1=on 2=off"},
+                    "inverted": {"const": True},
+                },
+            },
+            "credential": {"type": "object"},
+            "verified": {"type": "boolean"},
+        },
+    }
+
+
+def pdu_plan_schema() -> Dict[str, Any]:
+    """JSON Schema for ``ark.device-pdu-plan.v1`` (plan and verified result)."""
+    return {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": SCHEMAS["pdu_plan"],
+        "title": "ark device pdu plan",
+        "type": "object",
+        "required": ["schema", "generated_at", "action", "apply", "verified", "target", "encoding"],
+        "properties": {
+            "schema": {"const": SCHEMAS["pdu_plan"]},
+            "generated_at": _TS,
+            "action": {"type": "string", "enum": ["power-on", "power-off", "power-cycle"]},
+            "apply": {"type": "boolean", "description": "false = dry-run, nothing was written"},
+            "executed": {"type": "boolean"},
+            "verified": {"type": "boolean", "description": "true only after a read-back confirmed the state"},
+            "verified_by": {"type": "string"},
+            "backend": {"type": "string"},
+            "transport": {"type": "string"},
+            "target": {
+                "type": "object",
+                "required": ["host", "port", "outlet"],
+                "properties": {
+                    "host": {"type": "string"},
+                    "port": {"type": "integer"},
+                    "outlet": {"type": "integer", "minimum": 1, "maximum": 8},
+                },
+            },
+            "current_state": {"type": "string"},
+            "before": {"type": "object"},
+            "after": {"type": "object"},
+            "steps": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["step", "op"],
+                    "properties": {
+                        "step": {"type": "integer"},
+                        "op": {"type": "string", "enum": ["read", "set", "verify", "wait"]},
+                        "oid": {"type": "string"},
+                        "value": {"type": "integer"},
+                        "meaning": {"type": "string"},
+                        "encoding": {"type": "string"},
+                        "seconds": {"type": "number"},
+                        "why": {"type": "string"},
+                    },
+                },
+            },
+            "phases": {"type": "array"},
+            "hold_s": {"type": "number"},
+            "failure": {"type": "object"},
+            "preconditions": {"type": "array", "items": {"type": "string"}},
+            "refusals_guaranteed": {"type": "array", "items": {"type": "string"}},
+            "encoding": {"type": "object"},
+            "credential": {"type": "object"},
+            "note": {"type": "string"},
+        },
+    }
+
+
 def all_schemas() -> Dict[str, Dict[str, Any]]:
     return {
         "snapshot": snapshot_schema(),
@@ -428,4 +554,6 @@ def all_schemas() -> Dict[str, Dict[str, Any]]:
         "role-map": role_map_schema(),
         "clear-plan": clear_plan_schema(),
         "driver-check": driver_check_schema(),
+        "pdu-status": pdu_status_schema(),
+        "pdu-plan": pdu_plan_schema(),
     }

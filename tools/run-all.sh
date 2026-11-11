@@ -69,6 +69,28 @@ else
   echo "SKIP: pwsh not installed"
 fi
 
+step "pdu contract smoke (offline, no device touched)"
+if python3 -m device_io.cli pdu doctor --format json >/dev/null; then
+  echo "PASS: pdu doctor"
+else
+  fail "pdu doctor"
+fi
+if python3 -m device_io.cli pdu plan --host 10.9.9.9 --outlet 1 --plan-action power-cycle --format json >/dev/null; then
+  echo "PASS: pdu plan (offline)"
+else
+  fail "pdu plan"
+fi
+if python3 -m device_io.cli pdu power-cycle --host 127.0.0.1 --simulate --outlet 2 --apply --confirm-write --hold 0 --timeout 2 --interval 0.05 --format json >/dev/null; then
+  echo "PASS: pdu power-cycle (simulated, verified)"
+else
+  fail "pdu power-cycle (simulated)"
+fi
+if python3 -m device_io.cli pdu status --host 127.0.0.1 --simulate --format json >/dev/null; then
+  echo "PASS: pdu status (simulated)"
+else
+  fail "pdu status (simulated)"
+fi
+
 step "time lint"
 if python3 tools/time_lint.py "$ROOT"; then
   echo "PASS: time lint"

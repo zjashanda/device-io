@@ -7,7 +7,8 @@ parsing text:
 1  usage / contract error (bad spec, unreadable fixture, unknown format)
 2  resolution failed (a required role is missing/ambiguous/conflicting)
 3  operation unsupported on this platform (e.g. clearusb on Linux)
-4  backend unavailable (wrong OS, missing collector, PowerShell absent)
+4  backend unavailable (wrong OS, missing collector, PowerShell absent, PDU unreachable)
+5  write accepted but not verified (the read-back never observed the requested state)
 """
 
 from __future__ import annotations
@@ -27,6 +28,9 @@ EXIT_USAGE = 1
 EXIT_RESOLUTION = 2
 EXIT_UNSUPPORTED = 3
 EXIT_BACKEND = 4
+EXIT_UNVERIFIED = 5
+
+_PDU_ACTIONS = ("status", "outlet-status", "power-on", "power-off", "power-cycle", "doctor", "plan")
 
 
 def _add_backend_flags(parser: argparse.ArgumentParser) -> None:
@@ -222,6 +226,150 @@ def cmd_schema(args: argparse.Namespace) -> int:
     return EXIT_OK
 
 
+def cmd_pdu(args: argparse.Namespace) -> int:
+    """Generic PDU power control: dry-run by default, verified writes only."""
+    from .pdu import adapter as pdu, contract, credentials, modbus
+    from .pdu import text as pdu_text
+    from .pdu.snmp import SnmpError
+
+    def emit(document):
+        if args.format == "json":
+            _emit(render.dumps(document), args.out)
+        else:
+            renderer = getattr(pdu_text, "render_" + args.action.replace("-", "_"), None)
+            if renderer is None:
+                renderer = pdu_text.render_plan
+            _emit(renderer(document), args.out)
+
+    if args.action == "doctor":
+        document = {
+            "schema": contract.SCHEMA_STATUS,
+            "generated_at": schema.now_bj(),
+            "backends": pdu.backend_report(),
+            "encoding": {
+                "read": {"1": "off", "2": "on"},
+                "write": {"1": "on", "2": "off"},
+                "inverted": True,
+            },
+            "credential": dict(credentials.describe_sources(secret_file=args.community_file), value="***"),
+            "oid_table": contract.oid_table(args.outlet),
+            "warnings": [
+                "power-cycle requires --apply and --confirm-write",
+                "all-sockets writes are refused by design",
+            ],
+        }
+        if args.format == "json":
+            _emit(render.dumps(document), args.out)
+        else:
+            _emit(pdu_text.render_doctor(document), args.out)
+        return EXIT_OK
+
+    if args.pdu_backend == "modbus":
+        refusal = modbus.refusal()
+        refusal["generated_at"] = schema.now_bj()
+        if args.format == "json":
+            _emit(render.dumps(refusal), args.out)
+        else:
+            lines = ["Modbus RTU 后端不可用：{0}".format(refusal["reason"])]
+            lines.extend("  缺少：{0}".format(item) for item in refusal["unknown"])
+            lines.extend("  启用前置：{0}".format(item) for item in refusal["required_before_enable"])
+            _emit("\n".join(lines), args.out)
+        return EXIT_UNSUPPORTED
+
+    host = contract.validate_host(args.host)
+    # Validate the outlet and the second switch before any credential or socket
+    # work, so a bad invocation fails on the argument it got wrong.
+    if args.action in ("outlet-status", "power-on", "power-off", "power-cycle"):
+        outlet = contract.validate_outlet(args.outlet)
+    else:
+        outlet = contract.validate_outlet(args.outlet) if args.outlet is not None else None
+    if args.action == "power-cycle" and args.apply and not args.confirm_write:
+        raise contract.PduContractError(
+            "power-cycle cuts power: pass --confirm-write together with --apply"
+        )
+    community = None
+    if args.simulate:
+        transport = pdu.simulated_transport(pdu.parse_simulated_states(args.simulate_state))
+        client = pdu.build_client(host, args.port, transport=transport, timeout=args.snmp_timeout)
+        transport_desc = "memory (simulated PDU, no network)"
+        probe_http = False
+    elif args.action == "plan" or (args.action in ("power-on", "power-off", "power-cycle") and not args.apply):
+        client = None
+        transport_desc = "offline (plan only)"
+        probe_http = False
+    else:
+        community = credentials.resolve_community(secret_file=args.community_file)
+        client = pdu.build_client(
+            host,
+            args.port,
+            community=community,
+            timeout=args.snmp_timeout,
+            attempts=args.snmp_attempts,
+        )
+        transport_desc = client.transport.describe()
+        probe_http = not args.no_probe
+
+    pdu_adapter = pdu.PduAdapter(
+        client,
+        host,
+        port=args.port,
+        outlet=outlet,
+        community=community,
+        transport_desc=transport_desc,
+        probe_http=probe_http,
+        poll_timeout=args.timeout,
+        poll_interval=args.interval,
+    )
+    try:
+        if args.action == "status":
+            document = pdu_adapter.status([outlet] if outlet is not None else None)
+            emit_status = True
+        elif args.action == "outlet-status":
+            if outlet is None:
+                raise contract.PduContractError("outlet-status needs --outlet 1..8")
+            document = pdu_adapter.status([outlet])
+            document["outlets"] = [pdu_adapter.read_outlet(outlet)]
+            emit_status = True
+        elif args.action == "plan":
+            action = args.plan_action or "power-cycle"
+            document = pdu_adapter.plan(action)
+            emit_status = False
+        elif args.action == "power-on":
+            document = pdu_adapter.set_state("on", apply=args.apply, timeout_s=args.timeout)
+            emit_status = False
+        elif args.action == "power-off":
+            document = pdu_adapter.set_state("off", apply=args.apply, timeout_s=args.timeout)
+            emit_status = False
+        elif args.action == "power-cycle":
+            document = pdu_adapter.power_cycle(
+                apply=args.apply,
+                confirm_write=args.confirm_write,
+                hold_s=args.hold,
+                timeout_s=args.timeout,
+                restore_attempts=args.restore_attempts,
+            )
+            emit_status = False
+        else:  # pragma: no cover - argparse restricts the choices
+            raise contract.PduContractError("unknown pdu action {0!r}".format(args.action))
+    except SnmpError as exc:
+        print("pdu backend error: {0}".format(credentials.scrub(str(exc), [community] if community else [])), file=sys.stderr)
+        return EXIT_BACKEND
+    finally:
+        pdu_adapter.close()
+
+    if args.format == "json":
+        _emit(render.dumps(document), args.out)
+    elif emit_status:
+        _emit(pdu_text.render_outlet(document) if args.action == "outlet-status" else pdu_text.render_status(document), args.out)
+    else:
+        _emit(pdu_text.render_plan(document), args.out)
+    if document.get("apply") and document.get("executed") and not document.get("verified"):
+        return EXIT_UNVERIFIED
+    if document.get("apply") and not document.get("verified") and not document.get("executed"):
+        return EXIT_OK
+    return EXIT_OK
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="device-io",
@@ -276,13 +424,48 @@ def build_parser() -> argparse.ArgumentParser:
     clear.add_argument("--out", "-o")
     clear.set_defaults(func=cmd_clearusb)
 
+    pdu = subparsers.add_parser(
+        "pdu",
+        help="generic PDU power control over SNMP (dry-run by default; writes need --apply)",
+        description=(
+            "Generic PDU power control adapted from pudCorntrol.rar. Read-only unless --apply is "
+            "given; power-cycle also needs --confirm-write. The outlet is always explicit and "
+            "all-sockets writes are refused. Every write is verified by reading the socket back."
+        ),
+    )
+    pdu.add_argument("action", choices=list(_PDU_ACTIONS))
+    pdu.add_argument("--host", "--pdu-ip", dest="host", help="PDU address (required except for doctor)")
+    pdu.add_argument("--port", type=int, default=161, help="SNMP UDP port (default 161)")
+    pdu.add_argument("--outlet", "-n", type=int, help="socket number 1..8 (required for writes)")
+    pdu.add_argument("--apply", action="store_true", help="actually send the write (default: dry-run)")
+    pdu.add_argument("--confirm-write", action="store_true", help="second switch required by power-cycle")
+    pdu.add_argument("--hold", type=float, default=10.0, help="power-cycle off window in seconds (vendor waitTime 10)")
+    pdu.add_argument("--timeout", type=float, default=30.0, help="read-back poll budget per transition (seconds)")
+    pdu.add_argument("--interval", type=float, default=1.0, help="read-back poll interval (seconds)")
+    pdu.add_argument("--snmp-timeout", type=float, default=2.0, help="per-request SNMP timeout")
+    pdu.add_argument("--snmp-attempts", type=int, default=2, help="SNMP datagram attempts")
+    pdu.add_argument("--restore-attempts", type=int, default=2, help="power-cycle restore retries")
+    pdu.add_argument("--no-probe", action="store_true", help="skip the HTTP pre-flight probe")
+    pdu.add_argument("--pdu-backend", default="snmp", choices=["snmp", "modbus"], help="PDU backend (modbus is BLOCKED: serial parameters unknown)")
+    pdu.add_argument("--community-file", help="secret file with the SNMP community (mode 600)")
+    pdu.add_argument("--simulate", action="store_true", help="use the in-process simulated PDU (never opens a socket)")
+    pdu.add_argument("--simulate-state", help="with --simulate: 1=on,2=off,...")
+    pdu.add_argument("--plan-action", choices=["power-on", "power-off", "power-cycle"], help="action for `pdu plan`")
+    pdu.add_argument("--format", "-f", default="text", choices=["text", "json"])
+    pdu.add_argument("--out", "-o")
+    pdu.set_defaults(func=cmd_pdu)
+
     doctor = subparsers.add_parser("doctor", help="report backend availability")
     doctor.add_argument("--format", "-f", default="text", choices=["text", "json"])
     doctor.add_argument("--out", "-o")
     doctor.set_defaults(func=cmd_doctor)
 
     sch = subparsers.add_parser("schema", help="print a versioned JSON Schema")
-    sch.add_argument("name", nargs="?", help="snapshot | roles-spec | role-map | clear-plan | driver-check")
+    sch.add_argument(
+        "name",
+        nargs="?",
+        help="snapshot | roles-spec | role-map | clear-plan | driver-check | pdu-status | pdu-plan",
+    )
     sch.add_argument("--list", action="store_true")
     sch.add_argument("--out", "-o")
     sch.set_defaults(func=cmd_schema)

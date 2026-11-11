@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.3.0 — 2026-11-11
+
+Added: **generic PDU power control** (`device-io pdu`), adapted from
+`pudCorntrol.rar` (NOAH-58 inventory, SHA-256 `76fe3443…a673`).
+
+- `device_io.pdu` package: `contract` (OID map, read/write encoding inversion,
+  outlet validation), `snmp` (hand-rolled SNMPv2c BER codec + UDP transport +
+  an in-process simulated agent), `modbus` (frame builder, backend reported as
+  BLOCKED), `adapter` (probe/read/set/power-cycle/plan), `credentials`
+  (environment or mode-600 secret file only), `text` (renderers).
+- CLI: `device-io pdu status | outlet-status | plan | power-on | power-off |
+  power-cycle | doctor`, plus `--simulate` (in-process PDU, no socket).
+- Safety contract: dry-run by default; `--apply` for writes; `--confirm-write`
+  for cycles; outlet mandatory and limited to 1..8; all-sockets writes refused;
+  every write followed by a read-back poll, with "state unchanged" treated as
+  failure; `power-cycle` aborts before restore if the OFF transition cannot be
+  verified.
+- New schemas: `ark.device-pdu-status.v1`, `ark.device-pdu-plan.v1`.
+- New exit code `5`: write accepted but not verified.
+- Tests: encoding inversion (both directions), BER round trips including
+  long-form lengths, a real UDP loopback agent, sockets 1..8, poll timeout,
+  state-unchanged, failed cut / failed restore, all-sockets refusal, credential
+  masking and permission checks, and CLI exit codes. No real device is touched.
+- Docs: `docs/runbook-pdu.md`, `device_io/pdu/README.md`, README/interface
+  updates.
+
+Not included, deliberately: the vendor RAR, its `exe`, build output,
+`secondary archives` and manual binaries stay out of Git (they are referenced by
+the asset-tools/1006 manifest); the Modbus RTU transport is not enabled because
+baud rate and parity are not recorded in the archive.
+
 ## 0.2.0 — 2026-11-11
 
 **BREAKING:** the timestamp format changed. Every timestamp this tool writes is

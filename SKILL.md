@@ -75,6 +75,26 @@ device-io doctor
 - 端口标识 `port.id` = `board_key:设备名`，比裸端口名稳定；跨机器比较时用 `board_key` + `interface`。
 - 只有 `raw_` 开头的字段可以保留外部原始时间格式（原样透传、不参与解析）；其他字段出现异形时间即违约。`tools/time_lint.py` 会在门禁里扫描全仓。
 
+## PDU 电源控制（SNMP）
+
+```bash
+device-io pdu status --host <PDU_IP>                     # 只读：8 个插座状态 + 整机电流/功率
+device-io pdu outlet-status --host <PDU_IP> --outlet 3   # 只读：单个插座
+device-io pdu power-cycle --host <PDU_IP> --outlet 3     # 预演：只打印 OID 与步骤，不联网
+device-io pdu power-cycle --host <PDU_IP> --outlet 3 --apply --confirm-write
+```
+
+必须记住的四条：
+
+1. **插座号必填**（1..8），没有默认值；`0` 与 `255` 是"全部插座"，代码直接拒绝——那是整机架断电。
+2. **默认预演**。写入要 `--apply`；`power-cycle` 还要 `--confirm-write`。
+3. **写后必须回读**。命令返回成功不等于状态变了；回读没看到目标状态就退出码 `5`，插座状态视为未知，不要盲目重试。
+4. **社区串不落代码**。只从 `ARK_PDU_SNMP_COMMUNITY` 或 600 权限的密钥文件读取，输出/日志/文档里永远是 `***`。
+
+读码与写码是**相反**的：读 `1=断 2=通`，写 `1=通 2=断`。适配器只在 `device_io/pdu/contract.py` 里做映射，测试已钉死这个反转。
+Modbus RTU 后端只构造帧、状态为 BLOCKED（清单没记录波特率/校验位，不许猜）。
+没有生产 PDU 地址时不要编造，全部用 `--simulate`（进程内假 PDU，不开 socket）或 `plan` 预演。
+
 ## 平台差异（保留差异，不装作一样）
 
 | 维度 | Windows | Linux |
@@ -87,8 +107,9 @@ device-io doctor
 
 ## 边界
 
-- 唯一的写操作是 `clearusb --apply`，仅 Windows、仅非在位设备、默认预览。
+- 写操作只有两类，都默认预览：`clearusb --apply`（仅 Windows、仅非在位设备）与 `pdu power-* --apply`（网络、单个具名插座、写后回读校验；cycle 另需 `--confirm-write`）。
 - 不安装驱动、不改注册表、不重启、不动 `sshd_config`、不改节点环境变量。
-- 不执行任何烧录或串口读写。
+- 不执行任何烧录或串口读写；PDU 适配器不做串口（Modbus RTU 保持 BLOCKED）。
+- 不决定"该不该断电"：是否断电是任务级审批，适配器只负责把已批准的那一次操作做对、做可验证。
 - 第三方板卡通过 `--plugin` 加载 `ark.device-adapter.v1` JSON 扩展，不要改本仓库源码。
 - 详细字段表、Python API、迁移方法与退出码语义见 `docs/interface.md` 与 `MIGRATION.md`。

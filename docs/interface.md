@@ -7,9 +7,12 @@ themselves; that is the whole point of this repository.
 Two rules hold for every command and every API below:
 
 1. **Read-only by default.** Nothing here opens a serial port, resets a device,
-   installs a driver, or writes to a node. The only mutating operation is
-   `device-io clearusb --apply`, which is Windows-only, preview-by-default, and
-   limited to non-present (ghost) device instances.
+   installs a driver, or writes to a node. Two mutating operations exist, both
+   preview-by-default and both requiring an explicit flag: `device-io clearusb
+   --apply` (Windows-only, limited to non-present ghost device instances) and
+   the PDU writes `device-io pdu power-on|power-off|power-cycle --apply`
+   (network, one named socket, verified by reading it back; a cycle also
+   requires `--confirm-write`). Everything else is a report.
 2. **Versioned JSON.** Every document carries a `schema` key of the form
    `ark.device-<name>.v1`. Adding a field is a minor change; removing or
    renaming one requires `.v2`. The timestamp format below is part of that
@@ -27,6 +30,8 @@ Two rules hold for every command and every API below:
 | `ark.device-role-map.v1` | `roles` | resolution result per role |
 | `ark.device-clear-plan.v1` | `clearusb` | ghost-device preview / apply result |
 | `ark.device-driver-check.v1` | `driver check` | driver presence per family |
+| `ark.device-pdu-status.v1` | `pdu status`, `pdu outlet-status` | socket states, totals, encoding contract |
+| `ark.device-pdu-plan.v1` | `pdu plan`, `pdu power-*` | what would be written, and the verified result |
 | `ark.device-adapter.v1` | plugin files | third-party board adapters |
 | `ark.device-io.raw.v1` | `windows/Collect-DeviceIo.ps1` | raw Windows collector output (internal) |
 
@@ -71,6 +76,11 @@ device-io roles    --spec FILE [--strict|--no-strict] [--format text|json] [--sa
 device-io driver   list [--format json|table]
 device-io driver   check (--require csv | --spec FILE) [--format json|text]
 device-io clearusb [--apply] [--board vid:pid] [--timeout SECONDS] [--format json|text]
+device-io pdu      status|outlet-status|plan|power-on|power-off|power-cycle|doctor
+                   --host IP [--port 161] [--outlet N] [--apply] [--confirm-write]
+                   [--hold SECONDS] [--timeout SECONDS] [--interval SECONDS]
+                   [--no-probe] [--community-file FILE] [--simulate [--simulate-state 1=on,2=off]]
+                   [--pdu-backend snmp|modbus] [--format json|text]
 device-io doctor   [--format json|text]
 device-io schema   [NAME] [--list]
 ```
@@ -83,11 +93,14 @@ Exit codes are part of the contract:
 | 1 | usage error, malformed spec/schema, or unsupported operation |
 | 2 | role resolution failed (`ok: false`) |
 | 3 | operation unsupported on this platform |
-| 4 | backend unavailable (e.g. Windows collector on Linux) |
+| 4 | backend unavailable (e.g. Windows collector on Linux, or an unreachable PDU) |
+| 5 | PDU write accepted but never confirmed by a read-back - socket state unknown |
 
-Callers should treat `2`, `3` and `4` as distinct: `2` means hardware is present
-but the mapping is wrong (operator action), `4` means the runner cannot see
-hardware at all (environment action).
+Callers should treat `2`, `3`, `4` and `5` as distinct: `2` means hardware is
+present but the mapping is wrong (operator action), `4` means the runner cannot
+see hardware at all (environment action), and `5` means a write was sent and
+could not be verified - the socket may be in either state, so the only safe next
+step is to read it again, never to retry the write blindly.
 
 ## Role spec
 
@@ -170,13 +183,35 @@ code 3. It does not pretend to have cleaned anything.
 
 ## Dry-run
 
-`clearusb` previews by default; `--apply` is the only mutating flag in the whole
-CLI. Every document sets `dry_run` explicitly so a caller can refuse to act on a
-preview. `driver check` is always a report, never an installer.
+`clearusb` previews by default and so does every `pdu` write; `--apply` is the
+only write flag, and `pdu power-cycle` adds `--confirm-write` because cutting
+power is the operation most likely to be a mistake. Every document states
+`apply` / `executed` explicitly and a PDU document additionally states
+`verified`, which is `true` only after a read-back observed the requested state.
+`driver check` is always a report, never an installer.
+
+## PDU power control contract
+
+`device-io pdu` (package `device_io.pdu`) controls one socket on a DPDU-style
+PDU over SNMP v2c:
+
+| aspect | contract |
+|---|---|
+| addressing | `--host` is mandatory (the archive ships only stale sample IPs); `--outlet` is mandatory for writes and limited to 1..8 |
+| refused forms | outlet `0` and `255` (all sockets) are rejected before any I/O - that write can cut a whole rack |
+| encodings | read OID: `1=off 2=on`; write OID: `1=on 2=off`; the two never mix |
+| writes | `power-on` / `power-off` need `--apply`; `power-cycle` needs `--apply` **and** `--confirm-write` |
+| verification | every write is followed by bounded polling of the state OID; "wrote successfully, state unchanged" is a failure |
+| power-cycle | read → write off → verify off → hold (vendor `waitTime`, default 10 s) → write on → verify on; if OFF cannot be verified the cycle aborts **before** restore |
+| credentials | `ARK_PDU_SNMP_COMMUNITY`, else a mode-600 secret file; never a literal, never printed |
+| Modbus RTU | frame builder only; the backend reports `blocked` because baud/parity are not recorded in the archive |
 
 ## What this repository is not
 
 - It does not burn firmware. Burn orchestration stays in `venusahisiburner`.
 - It does not own test profiles or device-specific burn parameters.
+- It does not decide *whether* power should be cut. `ark-dispatch` may select
+  `device-io:pdu`, but an actual power-cycle remains a task-level approved
+  action with an explicit PDU address and socket.
 - It does not replace `usb-tree`'s GUI; the CLI tree renderer exists so logs and
   agents have a readable snapshot.
