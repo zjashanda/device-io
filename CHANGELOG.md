@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 — 2026-11-19
+
+Changed: 文档、SKILL 与迁移说明里的烧录能力名统一为 `burner`（仓库与 Skill 正式更名）。接口、schema 与行为不变。
+
 ## 0.3.0 — 2026-11-11
 
 Added: **generic PDU power control** (`device-io pdu`), adapted from
@@ -58,7 +62,7 @@ re-parsed with 0.2.0.
 ## 0.1.0 — 2026-11-10
 
 First public release. Consolidates the device-enumeration parts of `usb-tree`,
-`clearusb` and `venusahisiburner` into one stable interface.
+`clearusb` and `burner` into one stable interface.
 
 Added:
 

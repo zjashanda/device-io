@@ -1,13 +1,13 @@
 # Migrating to device-io
 
 `device-io` absorbs the device-enumeration half of `usb-tree`, the ghost-instance
-half of `clearusb`, and the port-guessing half of `venusahisiburner`. Nothing is
+half of `clearusb`, and the port-guessing half of `burner`. Nothing is
 deleted: the old repositories stay public and keep working until their callers
 move over.
 
 ## Why
 
-`venusahisiburner` preflight does this (measured in the current source, not
+`burner` preflight does this (measured in the current source, not
 paraphrased):
 
 ```python
@@ -44,7 +44,7 @@ That compares **device names only**. Consequences on a real bench:
 The profile keeps what is genuinely per-product (baud rates, burn command,
 firmware assets). It stops carrying serial port names.
 
-## Migration steps for venusahisiburner
+## Migration steps for burner
 
 1. Add `roles.json` next to the profile:
 
@@ -109,5 +109,5 @@ sysfs/CIM walk — that duplication is what this repository exists to remove.
 
 - Media/TCL device profiles: deferred by the owner; no measured claims yet.
 - `tcl-device-autoburn`: dead, not read, not migrated.
-- Any burn execution: stays in `venusahisiburner`; `device-io` never opens a
+- Any burn execution: stays in `burner`; `device-io` never opens a
   port.

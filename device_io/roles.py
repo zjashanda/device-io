@@ -1,6 +1,6 @@
 """Port role resolution.
 
-``venusahisiburner`` used to match ``COM3``/``COM4`` by name, which breaks the
+``burner`` used to match ``COM3``/``COM4`` by name, which breaks the
 moment Windows renumbers or a second board is plugged in. This module answers
 the question the burn flow actually asks: *which port plays the log / burn /
 control role for this board right now?* Five states are possible, and every
