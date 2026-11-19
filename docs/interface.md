@@ -1,6 +1,6 @@
 # device-io interface contract
 
-This document is the stable surface other skills program against. `venusahisiburner`
+This document is the stable surface other skills program against. `burner`
 and `lstest` must use these entry points instead of enumerating COM/tty devices
 themselves; that is the whole point of this repository.
 
@@ -208,7 +208,7 @@ PDU over SNMP v2c:
 
 ## What this repository is not
 
-- It does not burn firmware. Burn orchestration stays in `venusahisiburner`.
+- It does not burn firmware. Burn orchestration stays in `burner`.
 - It does not own test profiles or device-specific burn parameters.
 - It does not decide *whether* power should be cut. `ark-dispatch` may select
   `device-io:pdu`, but an actual power-cycle remains a task-level approved

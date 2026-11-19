@@ -3,7 +3,7 @@
 Read-only by default. ``collect_snapshot`` observes USB/serial/audio endpoints;
 ``resolve_roles`` maps them to named roles; ``clearusb`` previews (and only on
 explicit request removes) Windows ghost devices. Burning, flashing and port
-I/O stay in the calling skill (venusahisiburner, lstest, ...).
+I/O stay in the calling skill (burner, lstest, ...).
 """
 
 from __future__ import annotations

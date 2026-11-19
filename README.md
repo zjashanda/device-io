@@ -183,7 +183,7 @@ fixtures/             recorded snapshots (ark.device-io.v1) for offline replay
 tests/                unittest suite; runs on any OS
 docs/interface.md     the authoritative contract (schemas, CLI, API, non-goals)
 docs/runbook-pdu.md   operator runbook for PDU power operations
-MIGRATION.md          how venusahisiburner / lstest / usb-tree callers move over
+MIGRATION.md          how burner / lstest / usb-tree callers move over
 SKILL.md              agent-facing usage notes
 ```
 
